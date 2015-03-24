@@ -7,9 +7,36 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         numberOfXmlFiles: 0,
         numberOfClasses: 0,
         numberOfEnums: 0,
-        numberOfInterfaces: 0
+        numberOfInterfaces: 0,
+        sourceFiles: [
+            {id: "123", title: "First.java"},
+            {id: "234", title: "Second.java"}
+        ],
+        classFiles: [
+            {id: "777", title: "First.class"},
+            {id: "555", title: "Second.class"}
+        ],
+        xmlFiles: [
+            {id: "777", title: "pom.xml"},
+            {id: "555", title: "applicationContext.xml"}
+        ],
+        classes: [
+            {id: "777", title: "First"},
+            {id: "555", title: "Second"}
+        ],
+        enums: [
+            {id: "777", title: "FileType"}
+        ],
+        interfaces: [
+            {id: "777", title: "Clickable"}
+        ]
     };
-    $scope.selectedPath = ""
+    $scope.selectedPath = "";
+    $scope.filesForSelect = [];
+    $scope.dataToDisplay = {
+        info: "",
+        source: ""
+    }
 
     $scope.performAnalysis = function() {
         $http({
@@ -29,6 +56,36 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
             .error(function(data, status, headers, config) {
                 alert("Some error occured, check your path is correct");
             });
+    };
+
+    $scope.setSourceFilesForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.sourceFiles;
+    };
+
+    $scope.setClassFilesForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.classFiles;
+    };
+
+    $scope.setXmlFilesForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.xmlFiles;
+    };
+
+    $scope.setClassesForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.classes;
+    };
+
+    $scope.setEnumsForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.enums;
+    };
+
+    $scope.setInterfacesForSelect = function() {
+        $scope.filesForSelect = $scope.projectInfo.interfaces;
+    };
+
+
+    $scope.showItemInfo = function(projectItem) {
+        $scope.dataToDisplay.info = projectItem.id;
+        $scope.dataToDisplay.source = projectItem.title;
     }
 
 });
