@@ -1,12 +1,17 @@
 package ru.annaalkh.pviewer.model;
 
 import org.apache.commons.io.FilenameUtils;
+import ru.annaalkh.pviewer.AccessLevel;
 import ru.annaalkh.pviewer.ClassType;
 import ru.annaalkh.pviewer.Util;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Anna on 3/19/15.
@@ -19,7 +24,8 @@ public class ClassInfo implements ProjectItem {
     private FileInfo compiledFile;
     private Class compiledClass;
     private ClassType classType = ClassType.UNDEFINED;
-
+    private List<MethodInfo> methods = new ArrayList<>();
+    private List<FieldInfo> fields;
 
 
     public void setCompiledFile(FileInfo compiledFile) {
@@ -28,10 +34,17 @@ public class ClassInfo implements ProjectItem {
     }
 
     private void reinitCompiledClass() {
-        if (compiledClass == null) {
+        if (compiledFile == null) {
             compiledClass = null;
+            methods = new ArrayList<>();
             classType = ClassType.UNDEFINED;
         }
+        loadClass();
+        reinitClassType();
+        reinitMethods();
+    }
+
+    private void loadClass() {
         try {
             String pathWithoutPackage = getPathWithoutPackage();
             URL url = new File(pathWithoutPackage).toURI().toURL();
@@ -39,10 +52,10 @@ public class ClassInfo implements ProjectItem {
             ClassLoader loader = new URLClassLoader(urls);
             Class loadedClass = loader.loadClass(packageName + "." + name);
             compiledClass = loadedClass;
-            reinitClassType();
         }  catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void reinitClassType() {
@@ -60,6 +73,34 @@ public class ClassInfo implements ProjectItem {
         String packagePath = Util.getPathFromPackage(packageName);
         String result = path.replace(packagePath, "");
         return result;
+    }
+
+    private void reinitMethods() {
+        methods = new ArrayList<>();
+        Method[] methods = compiledClass.getDeclaredMethods();
+        for (Method method: methods) {
+            createAndAddMethodInfo(method);
+        }
+    }
+
+    private void createAndAddMethodInfo(Method method) {
+        if (method.isSynthetic()) {
+           return;
+        }
+
+        MethodInfo methodInfo = new MethodInfo();
+
+        methodInfo.setMethod(method);
+        methodInfo.setName(method.getName());
+
+        if (Modifier.isPublic(method.getModifiers())){
+            methodInfo.setAccessLevel(AccessLevel.PUBLIC);
+        }  else if (Modifier.isProtected(method.getModifiers())) {
+            methodInfo.setAccessLevel(AccessLevel.PROTECTED);
+        } else if (Modifier.isPrivate(method.getModifiers())) {
+            methodInfo.setAccessLevel(AccessLevel.PRIVATE);
+        }
+        methods.add(methodInfo);
     }
 
 
@@ -99,6 +140,18 @@ public class ClassInfo implements ProjectItem {
 
     public void setCompiledClass(Class compiledClass) {
         this.compiledClass = compiledClass;
+    }
+
+    public List<MethodInfo> getMethods() {
+        return methods;
+    }
+
+    public ClassType getClassType() {
+        return classType;
+    }
+
+    public List<FieldInfo> getFields() {
+        return fields;
     }
 
     public boolean isClass() {

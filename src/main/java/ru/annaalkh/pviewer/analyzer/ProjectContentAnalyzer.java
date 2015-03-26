@@ -17,6 +17,9 @@ import java.util.List;
 @Component
 public class ProjectContentAnalyzer implements Analyzer {
 
+    @Autowired
+    ClassContentAnalyzer classContentAnalyzer;
+
     @Override
     public ProjectContent analyse(ProjectItem projectItem) {
         Project project = (Project) projectItem;
@@ -40,6 +43,9 @@ public class ProjectContentAnalyzer implements Analyzer {
             if (classInfo.isClass()) numberOfClasses++;
             else if (classInfo.isInterface()) numberOfInterfaces++;
             else if (classInfo.isEnum()) numberOfEnums++;
+
+            ClassContent classContent = (ClassContent) classContentAnalyzer.analyse(classInfo);
+            projectContent.getClasses().add(classContent);
         }
 
         projectContent.setNumberOfClasses(numberOfClasses);

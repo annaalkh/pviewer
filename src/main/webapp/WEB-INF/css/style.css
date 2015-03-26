@@ -1,3 +1,7 @@
 .clickable {
     cursor: pointer;
 }
+
+.badge-important {
+    background-color: #c81060;
+}

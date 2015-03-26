@@ -9,12 +9,12 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         numberOfEnums: 0,
         numberOfInterfaces: 0,
         sourceFiles: [
-            {id: "123", title: "First.java"},
-            {id: "234", title: "Second.java"}
+            {id: "123", name: "First.java"},
+            {id: "234", name: "Second.java"}
         ],
         classFiles: [
-            {id: "777", title: "First.class"},
-            {id: "555", title: "Second.class"}
+            {id: "777", name: "First.class"},
+            {id: "555", name: "Second.class"}
         ],
         xmlFiles: [
             {id: "777", title: "pom.xml"},
@@ -37,6 +37,7 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         info: "",
         source: ""
     }
+    $scope.selectedFileType = "File" // or Class
 
     $scope.performAnalysis = function() {
         $http({
@@ -52,6 +53,8 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
                 $scope.projectInfo.numberOfClasses = data.numberOfClasses;
                 $scope.projectInfo.numberOfInterfaces = data.numberOfInterfaces;
                 $scope.projectInfo.numberOfEnums = data.numberOfEnums;
+
+                $scope.projectInfo.classes = data.classes;
             })
             .error(function(data, status, headers, config) {
                 alert("Some error occured, check your path is correct");
@@ -60,32 +63,59 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
 
     $scope.setSourceFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.sourceFiles;
+        $scope.selectedFileType = "File";
     };
 
     $scope.setClassFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.classFiles;
+        $scope.selectedFileType = "File";
     };
 
     $scope.setXmlFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.xmlFiles;
+        $scope.selectedFileType = "File";
     };
 
     $scope.setClassesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.classes;
+        $scope.selectedFileType = "Class";
     };
 
     $scope.setEnumsForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.enums;
+        $scope.selectedFileType = "Class";
     };
 
     $scope.setInterfacesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.interfaces;
+        $scope.selectedFileType = "Class";
     };
 
 
     $scope.showItemInfo = function(projectItem) {
-        $scope.dataToDisplay.info = projectItem.id;
-        $scope.dataToDisplay.source = projectItem.title;
+        $scope.dataToDisplay.info = prepareItemStructuredInfo(projectItem, $scope.classIsSelected());
+        $scope.dataToDisplay.source = projectItem.className;
+    }
+
+    function prepareItemStructuredInfo(projectItem, isClass) {
+        if (isClass) {
+            return {
+                title: projectItem.name,
+                numberOfMethods: projectItem.numberOfMethods,
+                numberOfPublicMethods: projectItem.numberOfPublicMethods,
+                numberOfProtectedMethods: projectItem.numberOfProtectedMethods,
+                numberOfPrivateMethods: projectItem.numberOfPrivateMethods
+            }
+        } else {
+            return {
+                title: projectItem.name,
+                description: "this is not java file"
+            }
+        }
+    }
+
+    $scope.classIsSelected = function() {
+        return $scope.selectedFileType == "Class";
     }
 
 });

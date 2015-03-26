@@ -1,11 +1,17 @@
 package ru.annaalkh.pviewer.analyzer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Anna on 3/21/15.
  */
 public class ProjectContent implements AnalysisResult {
 
     private String projectName;
+
+    private List<ClassContent> classes = new ArrayList<>();
+
     private int totalNumberOfFiles;
     private int numberOfSourceFiles;
     private int numberOfClassFiles;
@@ -20,6 +26,14 @@ public class ProjectContent implements AnalysisResult {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public List<ClassContent> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<ClassContent> classes) {
+        this.classes = classes;
     }
 
     public int getTotalNumberOfFiles() {
