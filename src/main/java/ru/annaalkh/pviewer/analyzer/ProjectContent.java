@@ -11,6 +11,8 @@ public class ProjectContent implements AnalysisResult {
     private String projectName;
 
     private List<ClassContent> classes = new ArrayList<>();
+    private List<ClassContent> interfaces = new ArrayList<>();
+    private List<ClassContent> enums = new ArrayList<>();
 
     private int totalNumberOfFiles;
     private int numberOfSourceFiles;
@@ -34,6 +36,22 @@ public class ProjectContent implements AnalysisResult {
 
     public void setClasses(List<ClassContent> classes) {
         this.classes = classes;
+    }
+
+    public List<ClassContent> getInterfaces() {
+        return interfaces;
+    }
+
+    public void setInterfaces(List<ClassContent> interfaces) {
+        this.interfaces = interfaces;
+    }
+
+    public List<ClassContent> getEnums() {
+        return enums;
+    }
+
+    public void setEnums(List<ClassContent> enums) {
+        this.enums = enums;
     }
 
     public int getTotalNumberOfFiles() {

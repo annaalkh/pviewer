@@ -37,7 +37,27 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         info: "",
         source: ""
     }
-    $scope.selectedFileType = "File" // or Class
+
+
+    $scope.fileTypes = {
+        typeFile: {
+            name: "File",
+            isJava: false
+        },
+        typeClass: {
+            name: "Class",
+            isJava: true
+        },
+        typeInterface: {
+            name: "Interface",
+            isJava: true
+        },
+        typeEnum: {
+            name: "Enum",
+            isJava: true
+        }};
+
+    $scope.selectedFileType = $scope.fileTypes.typeFile;
 
     $scope.performAnalysis = function() {
         $http({
@@ -55,6 +75,8 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
                 $scope.projectInfo.numberOfEnums = data.numberOfEnums;
 
                 $scope.projectInfo.classes = data.classes;
+                $scope.projectInfo.interfaces = data.interfaces;
+                $scope.projectInfo.enums = data.enums;
             })
             .error(function(data, status, headers, config) {
                 alert("Some error occured, check your path is correct");
@@ -63,44 +85,55 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
 
     $scope.setSourceFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.sourceFiles;
-        $scope.selectedFileType = "File";
+        $scope.selectedFileType = $scope.fileTypes.typeFile;
     };
 
     $scope.setClassFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.classFiles;
-        $scope.selectedFileType = "File";
+        $scope.selectedFileType = $scope.fileTypes.typeFile;
     };
 
     $scope.setXmlFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.xmlFiles;
-        $scope.selectedFileType = "File";
+        $scope.selectedFileType = $scope.fileTypes.typeFile;
     };
 
     $scope.setClassesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.classes;
-        $scope.selectedFileType = "Class";
+        $scope.selectedFileType = $scope.fileTypes.typeClass;
     };
 
     $scope.setEnumsForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.enums;
-        $scope.selectedFileType = "Class";
+        $scope.selectedFileType = $scope.fileTypes.typeEnum;
     };
 
     $scope.setInterfacesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.interfaces;
-        $scope.selectedFileType = "Class";
+        $scope.selectedFileType = $scope.fileTypes.typeInterface;
     };
 
 
     $scope.showItemInfo = function(projectItem) {
-        $scope.dataToDisplay.info = prepareItemStructuredInfo(projectItem, $scope.classIsSelected());
+        $scope.dataToDisplay.info = prepareItemStructuredInfo(projectItem, $scope.javaItemIsSelected());
         $scope.dataToDisplay.source = projectItem.className;
     }
 
-    function prepareItemStructuredInfo(projectItem, isClass) {
-        if (isClass) {
+    function prepareItemStructuredInfo(projectItem, isJavaItem) {
+        if (isJavaItem) {
             return {
                 title: projectItem.name,
+
+                numberOfFields: projectItem.numberOfFields,
+                numberOfPublicFields: projectItem.numberOfPublicFields,
+                numberOfProtectedFields: projectItem.numberOfProtectedFields,
+                numberOfPrivateFields: projectItem.numberOfPrivateFields,
+
+                numberOfConstructors: projectItem.numberOfConstructors,
+                numberOfPublicConstructors: projectItem.numberOfPublicConstructors,
+                numberOfProtectedConstructors: projectItem.numberOfProtectedConstructors,
+                numberOfPrivateConstructors: projectItem.numberOfPrivateConstructors,
+
                 numberOfMethods: projectItem.numberOfMethods,
                 numberOfPublicMethods: projectItem.numberOfPublicMethods,
                 numberOfProtectedMethods: projectItem.numberOfProtectedMethods,
@@ -114,8 +147,8 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         }
     }
 
-    $scope.classIsSelected = function() {
-        return $scope.selectedFileType == "Class";
+    $scope.javaItemIsSelected = function() {
+        return $scope.selectedFileType.isJava;
     }
 
 });

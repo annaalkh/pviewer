@@ -6,8 +6,7 @@ import ru.annaalkh.pviewer.ClassType;
 import ru.annaalkh.pviewer.Util;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -24,8 +23,9 @@ public class ClassInfo implements ProjectItem {
     private FileInfo compiledFile;
     private Class compiledClass;
     private ClassType classType = ClassType.UNDEFINED;
+    private List<FieldInfo> fields = new ArrayList<>();
+    private List<ConstructorInfo> constructors = new ArrayList<>();
     private List<MethodInfo> methods = new ArrayList<>();
-    private List<FieldInfo> fields;
 
 
     public void setCompiledFile(FileInfo compiledFile) {
@@ -36,11 +36,15 @@ public class ClassInfo implements ProjectItem {
     private void reinitCompiledClass() {
         if (compiledFile == null) {
             compiledClass = null;
+            fields = new ArrayList<>();
+            constructors = new ArrayList<>();
             methods = new ArrayList<>();
             classType = ClassType.UNDEFINED;
         }
         loadClass();
         reinitClassType();
+        reinitFields();
+        reinitConstructors();
         reinitMethods();
     }
 
@@ -75,10 +79,45 @@ public class ClassInfo implements ProjectItem {
         return result;
     }
 
+    private void reinitFields() {
+        fields = new ArrayList<>();
+        Field[] compiledFields = compiledClass.getDeclaredFields();
+        for (Field field: compiledFields) {
+            createAndAddFieldInfo(field);
+        }
+    }
+
+    private void createAndAddFieldInfo(Field field) {
+        FieldInfo fieldInfo = new FieldInfo();
+
+        fieldInfo.setName(field.getName());
+        fieldInfo.setField(field);
+        fieldInfo.setAccessLevel(getAccessLevel(field));
+
+        fields.add(fieldInfo);
+    }
+
+    private void reinitConstructors() {
+        constructors = new ArrayList<>();
+        Constructor[] compiledConstructors = compiledClass.getDeclaredConstructors();
+        for (Constructor constructor: compiledConstructors) {
+            createAndAddConstructorInfo(constructor);
+        }
+    }
+
+    private void createAndAddConstructorInfo(Constructor constructor) {
+        ConstructorInfo constructorInfo = new ConstructorInfo();
+
+        constructorInfo.setConstructor(constructor);
+        constructorInfo.setAccessLevel(getAccessLevel(constructor));
+
+        constructors.add(constructorInfo);
+    }
+
     private void reinitMethods() {
         methods = new ArrayList<>();
-        Method[] methods = compiledClass.getDeclaredMethods();
-        for (Method method: methods) {
+        Method[] compiledMethods = compiledClass.getDeclaredMethods();
+        for (Method method: compiledMethods) {
             createAndAddMethodInfo(method);
         }
     }
@@ -92,15 +131,20 @@ public class ClassInfo implements ProjectItem {
 
         methodInfo.setMethod(method);
         methodInfo.setName(method.getName());
+        methodInfo.setAccessLevel(getAccessLevel(method));
 
-        if (Modifier.isPublic(method.getModifiers())){
-            methodInfo.setAccessLevel(AccessLevel.PUBLIC);
-        }  else if (Modifier.isProtected(method.getModifiers())) {
-            methodInfo.setAccessLevel(AccessLevel.PROTECTED);
-        } else if (Modifier.isPrivate(method.getModifiers())) {
-            methodInfo.setAccessLevel(AccessLevel.PRIVATE);
-        }
         methods.add(methodInfo);
+    }
+
+    private AccessLevel getAccessLevel(Member member) {
+        if (Modifier.isPublic(member.getModifiers())){
+            return AccessLevel.PUBLIC;
+        }  else if (Modifier.isProtected(member.getModifiers())) {
+            return AccessLevel.PROTECTED;
+        } else if (Modifier.isPrivate(member.getModifiers())) {
+            return AccessLevel.PRIVATE;
+        }
+        return AccessLevel.DEFAULT;
     }
 
 
@@ -132,14 +176,16 @@ public class ClassInfo implements ProjectItem {
         return compiledFile;
     }
 
-
-
     public Class getCompiledClass() {
         return compiledClass;
     }
 
     public void setCompiledClass(Class compiledClass) {
         this.compiledClass = compiledClass;
+    }
+
+    public List<ConstructorInfo> getConstructors() {
+        return constructors;
     }
 
     public List<MethodInfo> getMethods() {

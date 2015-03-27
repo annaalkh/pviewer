@@ -63,12 +63,52 @@
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div class="tab-pane fade active in" id="infoTab">
-                            <div class="classStructuredInfo" ng-show="classIsSelected()">
+                            <div class="classStructuredInfo" ng-show="javaItemIsSelected()">
                                 <h4>{{dataToDisplay.info.title}}</h4>
                                 <ul class="list-group" style="width: 500px;">
                                     <li class="list-group-item">
+                                        Number of fields:
+                                        <span class="badge badge-important">{{dataToDisplay.info.numberOfFields}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Public:
+                                        <span class="badge">{{dataToDisplay.info.numberOfPublicFields}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Protected:
+                                        <span class="badge">{{dataToDisplay.info.numberOfProtectedFields}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Private:
+                                        <span class="badge">{{dataToDisplay.info.numberOfPrivateFields}}</span>
+                                    </li>
+
+                                    <li class="list-group-item">
+                                        Number of constructors:
+                                        <span class="badge badge-important">{{dataToDisplay.info.numberOfConstructors}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Public:
+                                        <span class="badge">{{dataToDisplay.info.numberOfPublicConstructors}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Protected:
+                                        <span class="badge">{{dataToDisplay.info.numberOfProtectedConstructors}}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <span class="glyphicon glyphicon-tag"></span>
+                                        Private:
+                                        <span class="badge">{{dataToDisplay.info.numberOfPrivateConstructors}}</span>
+                                    </li>
+
+                                    <li class="list-group-item">
                                         Number of methods:
-                                        <span class="badge badge-important">{{dataToDisplay.info. numberOfMethods}}</span>
+                                        <span class="badge badge-important">{{dataToDisplay.info.numberOfMethods}}</span>
                                     </li>
                                     <li class="list-group-item">
                                         <span class="glyphicon glyphicon-tag"></span>
@@ -87,7 +127,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="notClassStructuredInfo" ng-show="!classIsSelected()">
+                            <div class="notClassStructuredInfo" ng-show="!javaItemIsSelected()">
                                 <h4>{{dataToDisplay.info.title}}</h4>
                                 <h5>{{dataToDisplay.info.description}}</h5>
                             </div>

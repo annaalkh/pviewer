@@ -1,9 +1,8 @@
 package ru.annaalkh.pviewer.analyzer;
 
 import org.springframework.stereotype.Component;
-import ru.annaalkh.pviewer.model.ClassInfo;
-import ru.annaalkh.pviewer.model.MethodInfo;
-import ru.annaalkh.pviewer.model.ProjectItem;
+import ru.annaalkh.pviewer.AccessLevel;
+import ru.annaalkh.pviewer.model.*;
 
 import java.util.List;
 
@@ -19,34 +18,61 @@ public class ClassContentAnalyzer implements Analyzer {
 
         ClassContent classContent = new ClassContent();
         classContent.setName(classInfo.getName());
-        classContent.setClassType(classInfo.getClassType().name());
+        classContent.setClassType(classInfo.getClassType());
+
+        List<FieldInfo> fieldInfos = classInfo.getFields();
+        AccessLevelNumberInfo fieldsNumberInfo = getNumbersInfo(fieldInfos);
+
+        classContent.setNumberOfFields(fieldsNumberInfo.totalNumber);
+        classContent.setNumberOfPublicFields(fieldsNumberInfo.numberOfPublic);
+        classContent.setNumberOfProtectedFields(fieldsNumberInfo.numberOfProtected);
+        classContent.setNumberOfPrivateFields(fieldsNumberInfo.numberOfPrivate);
+
+        List<ConstructorInfo> constructorInfos = classInfo.getConstructors();
+        AccessLevelNumberInfo constructorsNumberInfo = getNumbersInfo(constructorInfos);
+
+        classContent.setNumberOfConstructors(constructorsNumberInfo.totalNumber);
+        classContent.setNumberOfPublicConstructors(constructorsNumberInfo.numberOfPublic);
+        classContent.setNumberOfProtectedConstructors(constructorsNumberInfo.numberOfProtected);
+        classContent.setNumberOfPrivateConstructors(constructorsNumberInfo.numberOfPrivate);
 
         List<MethodInfo> methodInfos = classInfo.getMethods();
+        AccessLevelNumberInfo methodsNumberInfo = getNumbersInfo(methodInfos);
 
-        int numberOfPublicMethods = 0;
-        int numberOfProtectedMethods = 0;
-        int numberOfPrivateMethods = 0;
+        classContent.setNumberOfMethods(methodsNumberInfo.totalNumber);
+        classContent.setNumberOfPublicMethods(methodsNumberInfo.numberOfPublic);
+        classContent.setNumberOfProtectedMethods(methodsNumberInfo.numberOfProtected);
+        classContent.setNumberOfPrivateMethods(methodsNumberInfo.numberOfPrivate);
 
-        for (MethodInfo methodInfo: methodInfos) {
-            switch (methodInfo.getAccessLevel()) {
+        return classContent;
+    }
+
+    private AccessLevelNumberInfo getNumbersInfo(List<? extends ClassContentItem> contentItems) {
+        AccessLevelNumberInfo numberInfo = new AccessLevelNumberInfo();
+        numberInfo.totalNumber = contentItems.size();
+
+        for (ClassContentItem item: contentItems) {
+            switch (item.getAccessLevel()) {
                 case PUBLIC:
-                    numberOfPublicMethods++;
+                    numberInfo.numberOfPublic++;
                     break;
                 case PROTECTED:
-                    numberOfProtectedMethods++;
+                    numberInfo.numberOfProtected++;
                     break;
                 case PRIVATE:
-                    numberOfPrivateMethods++;
+                    numberInfo.numberOfPrivate++;
                     break;
             }
         };
 
-        classContent.setNumberOfPublicMethods(numberOfPublicMethods);
-        classContent.setNumberOfProtectedMethods(numberOfProtectedMethods);
-        classContent.setNumberOfPrivateMethods(numberOfPrivateMethods);
+        return numberInfo;
+    }
 
-        classContent.setNumberOfMethods(methodInfos.size());
+    private static class AccessLevelNumberInfo {
+        int totalNumber = 0;
 
-        return classContent;
+        int numberOfPublic = 0;
+        int numberOfProtected = 0;
+        int numberOfPrivate = 0;
     }
 }

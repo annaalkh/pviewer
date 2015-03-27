@@ -45,7 +45,8 @@ public class ProjectContentAnalyzer implements Analyzer {
             else if (classInfo.isEnum()) numberOfEnums++;
 
             ClassContent classContent = (ClassContent) classContentAnalyzer.analyse(classInfo);
-            projectContent.getClasses().add(classContent);
+
+            addClassAccordingToType(projectContent, classContent);
         }
 
         projectContent.setNumberOfClasses(numberOfClasses);
@@ -60,5 +61,20 @@ public class ProjectContentAnalyzer implements Analyzer {
                 .stream()
                 .filter(file -> file.getType() == type)
                 .count();
+    }
+
+    //change to stream filter implementation?
+    private void addClassAccordingToType(ProjectContent projectContent, ClassContent classContent) {
+          switch (classContent.getClassType()) {
+              case CLASS:
+                  projectContent.getClasses().add(classContent);
+                  break;
+              case INTERFACE:
+                  projectContent.getInterfaces().add(classContent);
+                  break;
+              case ENUM:
+                  projectContent.getEnums().add(classContent);
+                  break;
+          }
     }
 }
