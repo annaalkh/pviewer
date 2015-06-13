@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.annaalkh.pviewer.analyzer.ProjectContent;
 import ru.annaalkh.pviewer.service.ProjectProcessingService;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * Created by Anna on 3/22/15.
  */
@@ -18,12 +20,15 @@ public class ProjectInfoController {
     private ProjectProcessingService projectProcessingService;
 
     @RequestMapping("/projects/projectInfo.json")
-    public ProjectContent getProjectContent(@RequestParam(value = "projectPath", required = false) String projectPath) {
+    public ProjectContent getProjectContent(@RequestParam(value = "projectPath", required = false) String projectPath,
+                                            HttpSession session) {
         if (StringUtils.isEmpty(projectPath)) {
             return new ProjectContent();
         }
 
-        return projectProcessingService.getProjectContent(projectPath);
+        ProjectContent projectContent = projectProcessingService.getProjectContent(projectPath);
+        session.setAttribute("projectContent", projectContent);
+        return projectContent;
     }
 
 

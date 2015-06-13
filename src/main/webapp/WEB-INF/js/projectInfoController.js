@@ -83,6 +83,20 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
             });
     };
 
+    $scope.getClassesList = function() {
+        $http({
+            url: '/projects/classes.json',
+            method: "GET"
+        }).success(function(data, status, headers, config) {
+                $scope.projectInfo.classes = data;
+                $scope.filesForSelect = $scope.projectInfo.classes;
+                $scope.selectedFileType = $scope.fileTypes.typeClass;
+            })
+            .error(function(data, status, headers, config) {
+                alert("Some error occured, check your path is correct");
+            });
+    };
+
     $scope.setSourceFilesForSelect = function() {
         $scope.filesForSelect = $scope.projectInfo.sourceFiles;
         $scope.selectedFileType = $scope.fileTypes.typeFile;
@@ -99,13 +113,15 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
     };
 
     $scope.setClassesForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.classes;
-        $scope.selectedFileType = $scope.fileTypes.typeClass;
+        $scope.getClassesList();
+//        $scope.filesForSelect = $scope.projectInfo.classes;
+//        $scope.selectedFileType = $scope.fileTypes.typeClass;
     };
 
     $scope.setEnumsForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.enums;
-        $scope.selectedFileType = $scope.fileTypes.typeEnum;
+        $scope.getClassesList();
+//        $scope.filesForSelect = $scope.projectInfo.enums;
+//        $scope.selectedFileType = $scope.fileTypes.typeEnum;
     };
 
     $scope.setInterfacesForSelect = function() {
