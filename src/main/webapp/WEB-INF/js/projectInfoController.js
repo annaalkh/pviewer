@@ -8,28 +8,12 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
         numberOfClasses: 0,
         numberOfEnums: 0,
         numberOfInterfaces: 0,
-        sourceFiles: [
-            {id: "123", name: "First.java"},
-            {id: "234", name: "Second.java"}
-        ],
-        classFiles: [
-            {id: "777", name: "First.class"},
-            {id: "555", name: "Second.class"}
-        ],
-        xmlFiles: [
-            {id: "777", title: "pom.xml"},
-            {id: "555", title: "applicationContext.xml"}
-        ],
-        classes: [
-            {id: "777", title: "First"},
-            {id: "555", title: "Second"}
-        ],
-        enums: [
-            {id: "777", title: "FileType"}
-        ],
-        interfaces: [
-            {id: "777", title: "Clickable"}
-        ]
+        sourceFiles: [],
+        classFiles: [],
+        xmlFiles: [],
+        classes:  [],
+        enums: [],
+        interfaces: []
     };
     $scope.selectedPath = "";
     $scope.filesForSelect = [];
@@ -59,6 +43,20 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
 
     $scope.selectedFileType = $scope.fileTypes.typeFile;
 
+    $scope.urls = {
+        getProjectInfo: '/projects/projectInfo.json',
+
+        getAllFileList: '/projects/all_files.json',
+        getSourceFileList: '/projects/source_files.json',
+        getClassFileList: '/projects/class_files.json',
+        getXmlFileList: '/projects/xml_files.json',
+        getClassesList: '/projects/classes.json',
+        getEnumsList: '/projects/enums.json',
+        getInterfacesList: '/projects/interfaces.json',
+
+        getItemInfo: '/projects/item_info.json'
+    }
+
     $scope.performAnalysis = function() {
         $http({
             url: '/projects/projectInfo.json',
@@ -83,56 +81,63 @@ angular.module('app', []).controller('ProjectInfoController',function ProjectInf
             });
     };
 
-    $scope.getClassesList = function() {
+
+    $scope.getDataFromServer = function(url, processDataCallback, params) {
         $http({
-            url: '/projects/classes.json',
+            url: url,
+            params: params,
             method: "GET"
         }).success(function(data, status, headers, config) {
-                $scope.projectInfo.classes = data;
-                $scope.filesForSelect = $scope.projectInfo.classes;
-                $scope.selectedFileType = $scope.fileTypes.typeClass;
+                processDataCallback(data);
             })
             .error(function(data, status, headers, config) {
                 alert("Some error occured, check your path is correct");
             });
     };
 
+    $scope.setFilesListForSelect = function(dataUrl, fileType) {
+        $scope.getDataFromServer(dataUrl, function(data) {
+            $scope.filesForSelect = data;
+            $scope.selectedFileType = fileType;
+        })
+    }
+
+
+    $scope.setAllFilesForSelect = function() {
+        $scope.setFilesListForSelect($scope.urls.getAllFileList, $scope.fileTypes.typeFile) ;
+    };
+
     $scope.setSourceFilesForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.sourceFiles;
-        $scope.selectedFileType = $scope.fileTypes.typeFile;
+        $scope.setFilesListForSelect($scope.urls.getSourceFileList, $scope.fileTypes.typeFile) ;
     };
 
     $scope.setClassFilesForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.classFiles;
-        $scope.selectedFileType = $scope.fileTypes.typeFile;
+        $scope.setFilesListForSelect($scope.urls.getClassFileList, $scope.fileTypes.typeFile) ;
     };
 
     $scope.setXmlFilesForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.xmlFiles;
-        $scope.selectedFileType = $scope.fileTypes.typeFile;
+        $scope.setFilesListForSelect($scope.urls.getXmlFileList, $scope.fileTypes.typeFile) ;
     };
 
     $scope.setClassesForSelect = function() {
-        $scope.getClassesList();
-//        $scope.filesForSelect = $scope.projectInfo.classes;
-//        $scope.selectedFileType = $scope.fileTypes.typeClass;
+        $scope.setFilesListForSelect($scope.urls.getClassesList, $scope.fileTypes.typeClass) ;
     };
 
     $scope.setEnumsForSelect = function() {
-        $scope.getClassesList();
-//        $scope.filesForSelect = $scope.projectInfo.enums;
-//        $scope.selectedFileType = $scope.fileTypes.typeEnum;
+        $scope.setFilesListForSelect($scope.urls.getEnumsLis, $scope.fileTypes.typeEnum) ;
     };
 
     $scope.setInterfacesForSelect = function() {
-        $scope.filesForSelect = $scope.projectInfo.interfaces;
-        $scope.selectedFileType = $scope.fileTypes.typeInterface;
+        $scope.setFilesListForSelect($scope.urls.getInterfacesList, $scope.fileTypes.typeInterface) ;
     };
 
 
+
     $scope.showItemInfo = function(projectItem) {
-        $scope.dataToDisplay.info = prepareItemStructuredInfo(projectItem, $scope.javaItemIsSelected());
-        $scope.dataToDisplay.source = projectItem.className;
+        $scope.getDataFromServer($scope.urls.getItemInfo, function(data) {
+            $scope.dataToDisplay.info = prepareItemStructuredInfo(data, $scope.javaItemIsSelected());
+            $scope.dataToDisplay.source = data.className;
+        }, {id: projectItem.id});
     }
 
     function prepareItemStructuredInfo(projectItem, isJavaItem) {

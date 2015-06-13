@@ -27,7 +27,7 @@ public class ProjectItemsController {
                 .stream()
                 .map(projectClass -> {
                     ProjectItemDto itemDto = new ProjectItemDto();
-                    itemDto.setId(1);
+                    itemDto.setId("1");
                     itemDto.setTitle(projectClass.getName());
                     return itemDto;
                 })

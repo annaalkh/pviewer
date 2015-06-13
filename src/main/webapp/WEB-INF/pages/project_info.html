@@ -25,8 +25,8 @@
             <div class="col-md-2">
                 <div >
                     <ul class="list-group">
-                        <li class="list-group-item clickable">Project name: {{projectInfo.projectName}}</li>
-                        <li class="list-group-item clickable">Total number of files: {{projectInfo.totalNumberOfFiles}}</li>
+                        <li class="list-group-item clickable" ng-click="setAllFilesForSelect()">Project name: {{projectInfo.projectName}}</li>
+                        <li class="list-group-item clickable" ng-click="setAllFilesForSelect()">Total number of files: {{projectInfo.totalNumberOfFiles}}</li>
                         <li class="list-group-item clickable" ng-click="setSourceFilesForSelect()">Number of source files: {{projectInfo.numberOfSourceFiles}}</li>
                         <li class="list-group-item clickable" ng-click="setClassFilesForSelect()">Number of class files: {{projectInfo.numberOfClassFiles}}</li>
                         <li class="list-group-item clickable" ng-click="setXmlFilesForSelect()">Number of xml files: {{projectInfo.numberOfXmlFiles}}</li>
